@@ -2,7 +2,7 @@ use crate::storage::Storage;
 use crate::task::{SortCriterion, Task, TaskStatus};
 use crate::session::{Session, SessionType};
 use crate::config::Config;
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Result};
 use colored::Colorize;
 use uuid::Uuid;
 

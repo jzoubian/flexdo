@@ -1,7 +1,7 @@
 use crate::task::{Task, TaskStatus};
 use anyhow::{Context, Result};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use uuid::Uuid;
 
 const DEFAULT_STORAGE_FILE: &str = "flexdo_tasks.json";

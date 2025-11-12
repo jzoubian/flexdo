@@ -1,12 +1,9 @@
 use crate::config::Config;
 use crate::storage::Storage;
-use crate::task::{SortCriterion, Task};
+use crate::task::SortCriterion;
 use anyhow::Result;
 use colored::Colorize;
-use crossterm::{
-    event::{self, Event, KeyCode, KeyEvent},
-    terminal::{disable_raw_mode, enable_raw_mode},
-};
+use crossterm::event::{self, Event, KeyCode, KeyEvent};
 use std::io::{self, Write};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -111,7 +108,7 @@ impl Session {
                 break;
             }
             
-            let task_idx: usize = match input.parse() {
+            let task_idx: usize = match input.parse::<usize>() {
                 Ok(n) if n > 0 && n <= tasks.len() => n - 1,
                 _ => {
                     println!("{}", "Invalid selection. Please try again.".red());
@@ -158,10 +155,9 @@ impl Session {
         Ok(())
     }
     
-    fn run_timer(&self, duration_minutes: u32, task_name: &str) -> Result<()> {
+    fn run_timer(&self, duration_minutes: u32, _task_name: &str) -> Result<()> {
         let duration = Duration::from_secs((duration_minutes * 60) as u64);
         let start = Instant::now();
-        let end_time = start + duration;
         
         println!("\n{}", format!("⏱  Timer started: {} minutes", duration_minutes).cyan().bold());
         println!("{}", "Press 'p' to pause, 'r' to resume, 'q' to quit".bright_black());
