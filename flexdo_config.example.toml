@@ -1,0 +1,17 @@
+# FlexDo Configuration File
+# This file is automatically created in your home directory as flexdo_config.toml
+
+[sessions]
+# Duration for mail/update sessions (in minutes)
+mail_duration_minutes = 30
+
+# Duration for focus sessions (urgent, important, easy) in minutes
+focus_duration_minutes = 120
+
+[sound]
+# Enable or disable sound alerts when timer ends
+enabled = true
+
+# Optional: Path to a custom sound file (MP3, WAV, OGG, FLAC)
+# If not specified, the system bell will be used
+# sound_file = "/path/to/your/sound.mp3"
