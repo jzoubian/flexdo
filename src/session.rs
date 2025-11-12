@@ -69,6 +69,9 @@ impl Session {
         }
         
         // Focus session - select and work on tasks
+        // Track remaining time across tasks in the session
+        let mut remaining_session_minutes = self.session_type.duration_minutes(&self.config);
+        
         loop {
             let mut tasks = storage.get_active_tasks()?;
             
@@ -119,8 +122,24 @@ impl Session {
             let selected_task = &tasks[task_idx];
             println!("\n{}", format!("Working on: {}", selected_task.description).bold().green());
             
-            // Run timer for the task
-            self.run_timer(self.session_type.duration_minutes(&self.config), &selected_task.description)?;
+            // Run timer for the task with remaining session time
+            let time_remaining = self.run_timer(remaining_session_minutes, &selected_task.description)?;
+            
+            // Check if session time is up
+            if time_remaining == 0 {
+                println!("\n{}", "⏰ Session time is up!".green().bold());
+                break;
+            }
+            
+            // Update remaining session time for next task
+            remaining_session_minutes = time_remaining;
+            
+            // Display remaining session time
+            let remaining_mins = remaining_session_minutes;
+            let remaining_hours = remaining_mins / 60;
+            let remaining_mins_display = remaining_mins % 60;
+            println!("\n{}", format!("⏸  Session paused | Remaining time: {}h {:02}m", 
+                                     remaining_hours, remaining_mins_display).cyan());
             
             // Ask if task is complete
             println!("\n{}", "Is this task complete? (y/n/q to quit session): ".bold());
@@ -150,12 +169,14 @@ impl Session {
                 println!("{}", "Session ended.".yellow());
                 break;
             }
+            
+            println!("{}", "⏸  Timer will resume when you select the next task...".bright_black());
         }
         
         Ok(())
     }
     
-    fn run_timer(&self, duration_minutes: u32, _task_name: &str) -> Result<()> {
+    fn run_timer(&self, duration_minutes: u32, _task_name: &str) -> Result<u32> {
         let duration = Duration::from_secs((duration_minutes * 60) as u64);
         let start = Instant::now();
         
@@ -199,7 +220,7 @@ impl Session {
                 if self.config.sound.enabled {
                     self.play_sound();
                 }
-                break;
+                return Ok(0); // No time remaining
             }
             
             // Check for key input (non-blocking)
@@ -233,7 +254,15 @@ impl Session {
                         }
                         KeyCode::Char('q') | KeyCode::Char('Q') => {
                             println!("\n{}", "Timer stopped.".yellow());
-                            return Ok(());
+                            // Calculate and return remaining minutes
+                            let elapsed = Instant::now() - start - total_pause_duration;
+                            let remaining = if elapsed < duration {
+                                duration - elapsed
+                            } else {
+                                Duration::from_secs(0)
+                            };
+                            let remaining_minutes = (remaining.as_secs() / 60) as u32;
+                            return Ok(remaining_minutes);
                         }
                         _ => {}
                     }
@@ -242,8 +271,6 @@ impl Session {
             
             thread::sleep(Duration::from_millis(100));
         }
-        
-        Ok(())
     }
     
     fn play_sound(&self) {
