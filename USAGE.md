@@ -4,20 +4,16 @@ A command-line tool for flexible daily task management, focusing on adaptive sch
 
 ## Installation
 
-### Using Nix (NixOS or with Nix package manager)
+### Set up environment with Nix
 
 ```bash
 # Enter the development environment
 nix-shell
-
-# Build the project
-cargo build --release
-
-# Install (optional)
-cargo install --path .
 ```
 
-### Using Cargo directly
+If you don't have Nix installed, follow the instructions at https://nixos.org/download.html or install the dependency manually.
+
+### Build and Install with Cargo
 
 ```bash
 # Build the project
@@ -25,6 +21,12 @@ cargo build --release
 
 # Install
 cargo install --path .
+
+# Set up your shell to find the installed binary
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# Verify installation
+flexdo --help
 ```
 
 ## Usage
@@ -118,7 +120,9 @@ During a focus session:
 
 ## Configuration
 
-FlexDo creates a configuration file in your home directory: `~/flexdo_config.toml`
+FlexDo creates a configuration directory in your home directory: `~/.flexdo/`
+
+The configuration file is stored at: `~/.flexdo/config.toml`
 
 Example configuration:
 
@@ -139,7 +143,7 @@ You can edit this file to customize:
 
 ## Data Storage
 
-Tasks are stored in `~/flexdo_tasks.json` as a JSON file. This makes it easy to:
+Tasks are stored in `~/.flexdo/tasks.json` as a JSON file. This makes it easy to:
 - Backup your tasks
 - Sync across machines
 - Export or analyze your task history

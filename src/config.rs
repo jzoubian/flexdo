@@ -3,7 +3,8 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 
-const DEFAULT_CONFIG_FILE: &str = "flexdo_config.toml";
+const FLEXDO_DIR: &str = ".flexdo";
+const DEFAULT_CONFIG_FILE: &str = "config.toml";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -99,6 +100,13 @@ impl Config {
     
     fn get_config_path() -> PathBuf {
         let mut path = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
+        path.push(FLEXDO_DIR);
+        
+        // Create .flexdo directory if it doesn't exist
+        if !path.exists() {
+            fs::create_dir_all(&path).ok();
+        }
+        
         path.push(DEFAULT_CONFIG_FILE);
         path
     }

@@ -18,5 +18,4 @@
 Thumbs.db
 
 # FlexDo data files (optional, user might want to keep these)
-# flexdo_tasks.json
-# flexdo_config.toml
+# .flexdo/

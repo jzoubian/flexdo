@@ -4,7 +4,8 @@ use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
 
-const DEFAULT_STORAGE_FILE: &str = "flexdo_tasks.json";
+const FLEXDO_DIR: &str = ".flexdo";
+const DEFAULT_STORAGE_FILE: &str = "tasks.json";
 
 pub struct Storage {
     file_path: PathBuf,
@@ -14,6 +15,13 @@ impl Storage {
     pub fn new(file_path: Option<PathBuf>) -> Self {
         let file_path = file_path.unwrap_or_else(|| {
             let mut path = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
+            path.push(FLEXDO_DIR);
+            
+            // Create .flexdo directory if it doesn't exist
+            if !path.exists() {
+                fs::create_dir_all(&path).ok();
+            }
+            
             path.push(DEFAULT_STORAGE_FILE);
             path
         });
