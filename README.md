@@ -55,27 +55,27 @@ All durations and focus types must be configurable.
 | `flexdo start easy` | Start a 2h easy session |
 
 ### Technical Goals
-- Implemented in **Python** (e.g. using `click` or `typer` for CLI)
-- Local **JSON or SQLite** database for persistence
-- **Config file (YAML or TOML)** for session parameters
-- Use **asyncio** or threading for timers
-- Optionally play sounds with `playsound` or similar library
+- Implemented in **Rust** using `clap` for CLI argument parsing
+- Local **JSON** database for persistence
+- **Config file (TOML)** for session parameters
+- Timer functionality with sound alerts using `rodio`
+- Cross-platform terminal support with `crossterm`
 
 ### Stretch Goals
 - Export daily logs to Markdown or CSV
 - Show daily report or stats (time spent per criterion)
-- Support interactive TUI (e.g. with `textual` or `rich`)
+- Support interactive TUI (e.g. with `tui-rs` or `ratatui`)
 
 ---
 
 ## Development Steps
-1. Initialize Python project with CLI framework (`typer` preferred)
+1. Initialize Rust project with Cargo and dependencies
 2. Implement task model + local storage
 3. Implement commands (`add`, `list`, `done`, etc.)
 4. Implement session logic with timers and sound alerts
 5. Add configuration file for durations and weights
 6. Polish CLI help and formatting
-7. Add tests and docs
+7. Build and test the application
 
 ---
 
@@ -90,3 +90,11 @@ flexdo list --sort urgent
 # Start an urgent session
 flexdo start urgent
 ```
+
+## License
+
+This project is licensed under the GPL3 License - see the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+This code was drafted by Julien Zoubian with the assistance of Copilot Agent and Claude AI for editing, structure, and formatting — under Julien Zoubian’s full supervision and revision.
