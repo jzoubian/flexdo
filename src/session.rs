@@ -164,27 +164,24 @@ impl Session {
         println!("{}", "─".repeat(80));
         
         let mut paused = false;
-        let mut pause_time = Duration::from_secs(0);
+        let mut total_pause_duration = Duration::from_secs(0);
         let mut pause_start: Option<Instant> = None;
+        let mut remaining_when_paused: Option<Duration> = None;
         
         loop {
             let now = Instant::now();
             
-            // Calculate elapsed time
-            let elapsed = if paused {
-                now - start - pause_time
-            } else if let Some(ps) = pause_start {
-                pause_time += now - ps;
-                pause_start = Some(now);
-                now - start - pause_time
+            // Calculate elapsed and remaining time
+            let remaining = if paused {
+                // When paused, keep showing the same time
+                remaining_when_paused.unwrap_or(Duration::from_secs(0))
             } else {
-                now - start - pause_time
-            };
-            
-            let remaining = if elapsed < duration {
-                duration - elapsed
-            } else {
-                Duration::from_secs(0)
+                let elapsed = now - start - total_pause_duration;
+                if elapsed < duration {
+                    duration - elapsed
+                } else {
+                    Duration::from_secs(0)
+                }
             };
             
             // Display timer
@@ -196,8 +193,8 @@ impl Session {
             }
             io::stdout().flush()?;
             
-            // Check for completion
-            if remaining.as_secs() == 0 {
+            // Check for completion (only when not paused)
+            if !paused && remaining.as_secs() == 0 {
                 println!("\n\n{}", "⏰ Time's up!".green().bold());
                 if self.config.sound.enabled {
                     self.play_sound();
@@ -213,16 +210,24 @@ impl Session {
                             if !paused {
                                 paused = true;
                                 pause_start = Some(Instant::now());
+                                // Store the remaining time when we pause
+                                let elapsed = now - start - total_pause_duration;
+                                remaining_when_paused = Some(if elapsed < duration {
+                                    duration - elapsed
+                                } else {
+                                    Duration::from_secs(0)
+                                });
                                 println!("\n{}", "⏸  Timer paused".yellow());
                             }
                         }
                         KeyCode::Char('r') | KeyCode::Char('R') => {
                             if paused {
                                 if let Some(ps) = pause_start {
-                                    pause_time += Instant::now() - ps;
+                                    total_pause_duration += Instant::now() - ps;
                                     pause_start = None;
                                 }
                                 paused = false;
+                                remaining_when_paused = None;
                                 println!("\n{}", "▶  Timer resumed".green());
                             }
                         }
